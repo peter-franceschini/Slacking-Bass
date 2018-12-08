@@ -1,16 +1,28 @@
 ﻿using Slack.Models.Slack;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Slack.Services
 {
     public class AlexaNotificationService
     {
-        public void ProcessCommand(SlashCommandPayload slashCommandPayload)
-        {
+        private INotificationService NotificationService { get; set; }
 
+        public AlexaNotificationService()
+        {
+            NotificationService = new NotifyMeService();
+        }
+
+        public bool ProcessCommand(SlashCommandPayload slashCommandPayload)
+        {
+            var notificationMessage = BuildNotificationMessage(slashCommandPayload);
+
+            return NotificationService.Notify($"Message from {slashCommandPayload.UserName}", notificationMessage);
+        }
+
+        private string BuildNotificationMessage(SlashCommandPayload slashCommandPayload)
+        {
+            var message = $"Message from {slashCommandPayload.UserName} at {DateTime.Now.ToShortTimeString()}... {slashCommandPayload.Text}";
+            return message;
         }
     }
 }

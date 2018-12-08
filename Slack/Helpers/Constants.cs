@@ -18,13 +18,5 @@ namespace Slack.Helpers
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             Configuration = builder.Build();
         }
-
-        public string SlackSigningSignature
-        {
-            get
-            {
-                return Configuration["Slack_SigningSecret"];
-            }
-        }
     }
 }

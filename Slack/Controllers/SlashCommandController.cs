@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Slack.Models;
-using Newtonsoft.Json;
 using Slack.Models.Slack;
 using Slack.Services;
 using Slack.Utilities.Slack;
 using System.IO;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using System.Security.Cryptography;
-using System.Web;
 
 namespace Slack.Controllers
 {
@@ -42,10 +33,18 @@ namespace Slack.Controllers
             }
 
             // Dispatch to NotificationService
-            AlexaNotificationService.ProcessCommand(slashCommandPayload);
+            var success = AlexaNotificationService.ProcessCommand(slashCommandPayload);
 
             // Send response to Slack
-            var slashCommandResponse = new SlashCommandResponse() { ResponseType = "in_channel", Text = "Message sent to Billy Bass" };
+            SlashCommandResponse slashCommandResponse;
+            if (success)
+            {
+                slashCommandResponse = new SlashCommandResponse() { ResponseType = "in_channel", Text = "Message sent to Billy Bass" };
+            }
+            else
+            {
+                slashCommandResponse = new SlashCommandResponse() { ResponseType = "ephemeral", Text = "Error sending message to Billy Bass" };
+            }
 
             return Ok(slashCommandResponse);
         }

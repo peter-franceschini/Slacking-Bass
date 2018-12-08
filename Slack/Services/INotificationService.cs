@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Slack.Services
+﻿namespace Slack.Services
 {
     public interface INotificationService
     {
-        void Notify(string title, string body);
+        bool Notify(string title, string body);
     }
 }
