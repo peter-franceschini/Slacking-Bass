@@ -8,6 +8,11 @@ using Newtonsoft.Json;
 using Slack.Models.Slack;
 using Slack.Services;
 using Slack.Utilities.Slack;
+using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
+using System.Web;
 
 namespace Slack.Controllers
 {
@@ -23,22 +28,34 @@ namespace Slack.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public IActionResult Command(SlashCommandPayload slashCommandPayload)
+        public async Task<IActionResult> Post()
         {
+            var requestBody = ReadAsString(Request.Body).Result;
+
+            var slashCommandPayload = new SlashCommandPayload(requestBody);
+
             // Verify request signature
             var slackSigningUtil = new SlackSigningUtil();
-            if(!slackSigningUtil.ValidateSignature(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], slashCommandPayload.Command))
+            if (!slackSigningUtil.SignatureValid(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], requestBody))
             {
                 return BadRequest();
             }
 
             // Dispatch to NotificationService
-            AlexaNotificationService.Notify()
+            AlexaNotificationService.ProcessCommand(slashCommandPayload);
 
             // Send response to Slack
             var slashCommandResponse = new SlashCommandResponse() { ResponseType = "in_channel", Text = "Message sent to Billy Bass" };
-            
+
             return Ok(slashCommandResponse);
+        }
+
+        private async Task<string> ReadAsString(Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                return await reader.ReadToEndAsync();
+            }
         }
     }
 }
