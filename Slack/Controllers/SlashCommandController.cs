@@ -4,17 +4,25 @@ using Slack.Models.Slack;
 using Slack.Services;
 using Slack.Utilities.Slack;
 using System.IO;
+using Microsoft.Extensions.Options;
+using Slack.Models.NotifyMe;
 
 namespace Slack.Controllers
 {
     [Route("api/[controller]")]
     public class SlashCommandController : Controller
     {
+        private SlackSettings SlackSettings { get; set; }
+        private NotifyMeSettings NotifyMeSettings { get; set; }
         private AlexaNotificationService AlexaNotificationService { get; set; }
+        private INotificationService NotificationService { get; set; }
 
-        public SlashCommandController()
+        public SlashCommandController(IOptions<SlackSettings> slackSettings, IOptions<NotifyMeSettings> notifyMeSettings, INotificationService notificationService)
         {
-            AlexaNotificationService = new AlexaNotificationService();
+            SlackSettings = slackSettings.Value;
+            NotifyMeSettings = notifyMeSettings.Value;
+            NotificationService = notificationService;
+            AlexaNotificationService = new AlexaNotificationService(NotificationService);
         }
 
         [HttpPost]
@@ -27,7 +35,7 @@ namespace Slack.Controllers
 
             // Verify request signature
             var slackSigningUtil = new SlackSigningUtil();
-            if (!slackSigningUtil.SignatureValid(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], requestBody))
+            if (!slackSigningUtil.SignatureValid(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], requestBody, SlackSettings.SignatureSecret))
             {
                 return BadRequest();
             }

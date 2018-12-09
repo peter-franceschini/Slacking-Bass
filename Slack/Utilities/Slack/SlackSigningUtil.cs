@@ -1,34 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Slack.Utilities.Slack
 {
     public class SlackSigningUtil
     {
-        private string SigningSecret = "";
 
-        public bool SignatureValid(string xSlackSignature, string xSlackRequestTimestamp, string requestBody)
+        public bool SignatureValid(string xSlackSignature, string xSlackRequestTimestamp, string requestBody, string signatureSecret)
         {
             if (!DateValid(xSlackRequestTimestamp))
             {
                 return false;
             }
 
-            var hmacHash = GetHmacSha256Hash(xSlackRequestTimestamp, requestBody);
+            var hmacHash = GetHmacSha256Hash(xSlackRequestTimestamp, requestBody, signatureSecret);
 
             return hmacHash == xSlackSignature;
         }
 
-        private string GetHmacSha256Hash(string xSlackRequestTimestamp, string requestBody)
+        private string GetHmacSha256Hash(string xSlackRequestTimestamp, string requestBody, string signatureSecret)
         {
             var requestSignature = BuildRequestSignature(xSlackRequestTimestamp, requestBody);
 
-            var HmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(SigningSecret));
+            var HmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(signatureSecret));
             var hashBytes = HmacSha256.ComputeHash(Encoding.UTF8.GetBytes(requestSignature));
             var hash = HashEncode(hashBytes);
             var versionedHash = $"v0={hash}";

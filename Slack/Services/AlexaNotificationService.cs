@@ -7,9 +7,9 @@ namespace Slack.Services
     {
         private INotificationService NotificationService { get; set; }
 
-        public AlexaNotificationService()
+        public AlexaNotificationService(INotificationService notificationService)
         {
-            NotificationService = new NotifyMeService();
+            NotificationService = notificationService;
         }
 
         public bool ProcessCommand(SlashCommandPayload slashCommandPayload)

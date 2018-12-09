@@ -1,23 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Slack.Models.NotifyMe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Slack.Services
 {
     public class NotifyMeService : INotificationService
     {
         private static readonly HttpClient client = new HttpClient();
+        private NotifyMeSettings NotifyMeSettings { get; set; }
+
+        public NotifyMeService(IOptions<NotifyMeSettings> notifyMeSettings)
+        {
+            NotifyMeSettings = notifyMeSettings.Value;
+        }
 
         public bool Notify(string title, string body)
         {
             var payload = new NotifyMePayload()
             {
-                AccessCode = "",
+                AccessCode = NotifyMeSettings.AccessCode,
                 Notification = body,
                 Title = title
             };
