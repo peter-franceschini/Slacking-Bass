@@ -6,6 +6,7 @@ using Slack.Utilities.Slack;
 using System.IO;
 using Microsoft.Extensions.Options;
 using Slack.Models.NotifyMe;
+using Slack.Utilities;
 
 namespace Slack.Controllers
 {
@@ -29,7 +30,8 @@ namespace Slack.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Post()
         {
-            var requestBody = ReadAsString(Request.Body).Result;
+            var streamHelper = new StreamHelper();
+            var requestBody = streamHelper.ReadAsString(Request.Body).Result;
 
             var slashCommandPayload = new SlashCommandPayload(requestBody);
 
@@ -55,14 +57,6 @@ namespace Slack.Controllers
             }
 
             return Ok(slashCommandResponse);
-        }
-
-        private async Task<string> ReadAsString(Stream stream)
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                return await reader.ReadToEndAsync();
-            }
         }
     }
 }
