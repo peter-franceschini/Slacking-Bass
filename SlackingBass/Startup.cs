@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Slack.Models.NotifyMe;
-using Slack.Models.Slack;
-using Slack.Services;
+using SlackingBass.Models.NotifyMe;
+using SlackingBass.Models.Slack;
+using SlackingBass.Services;
 
-namespace Slack
+namespace SlackingBass
 {
     public class Startup
     {

@@ -1,7 +1,7 @@
-﻿using Slack.Models.Slack;
+﻿using SlackingBass.Models.Slack;
 using System;
 
-namespace Slack.Services
+namespace SlackingBass.Services
 {
     public class AlexaNotificationService
     {

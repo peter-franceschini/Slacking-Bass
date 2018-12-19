@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Slack.Models.Slack
+namespace SlackingBass.Models.Slack
 {
     public class SlackSettings
     {

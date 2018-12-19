@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Slack.Models.NotifyMe
+namespace SlackingBass.Models.NotifyMe
 {
     public class NotifyMePayload
     {

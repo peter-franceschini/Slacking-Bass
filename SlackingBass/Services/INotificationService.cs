@@ -1,4 +1,4 @@
-﻿namespace Slack.Services
+﻿namespace SlackingBass.Services
 {
     public interface INotificationService
     {

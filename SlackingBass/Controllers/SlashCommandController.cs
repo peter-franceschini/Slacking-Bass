@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Slack.Models.Slack;
-using Slack.Services;
-using Slack.Utilities.Slack;
+using SlackingBass.Models.Slack;
+using SlackingBass.Services;
+using SlackingBass.Utilities.Slack;
 using System.IO;
 using Microsoft.Extensions.Options;
-using Slack.Models.NotifyMe;
-using Slack.Utilities;
+using SlackingBass.Models.NotifyMe;
+using SlackingBass.Utilities;
 
-namespace Slack.Controllers
+namespace SlackingBass.Controllers
 {
     [Route("api/[controller]")]
     public class SlashCommandController : Controller

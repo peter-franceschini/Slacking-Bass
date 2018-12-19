@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Slack.Models.Slack
+namespace SlackingBass.Models.Slack
 {
     public class SlashCommandPayload
     {

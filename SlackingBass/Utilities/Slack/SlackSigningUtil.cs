@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Slack.Utilities.Slack
+namespace SlackingBass.Utilities.Slack
 {
     public class SlackSigningUtil
     {

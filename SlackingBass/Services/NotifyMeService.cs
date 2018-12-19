@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Slack.Models.NotifyMe;
+using SlackingBass.Models.NotifyMe;
 using System.Net.Http;
 using System.Text;
 
-namespace Slack.Services
+namespace SlackingBass.Services
 {
     public class NotifyMeService : INotificationService
     {
