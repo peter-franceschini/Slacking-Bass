@@ -8,6 +8,14 @@ namespace Slack.Utilities.Slack
     {
         private const string VersionNumber = "v0";
 
+        /// <summary>
+        /// Checks the validity of a Slack request using the requests signature
+        /// </summary>
+        /// <param name="xSlackSignature"></param>
+        /// <param name="xSlackRequestTimestamp"></param>
+        /// <param name="requestBody"></param>
+        /// <param name="signatureSecret"></param>
+        /// <returns></returns>
         public bool SignatureValid(string xSlackSignature, string xSlackRequestTimestamp, string requestBody, string signatureSecret)
         {
             if (!DateValid(xSlackRequestTimestamp))
@@ -15,15 +23,20 @@ namespace Slack.Utilities.Slack
                 return false;
             }
 
-            var hmacHash = GetHmacSha256Hash(xSlackRequestTimestamp, requestBody, signatureSecret);
+            var requestSignature = BuildRequestSignature(xSlackRequestTimestamp, requestBody);
+            var hmacHash = GetHmacSha256Hash(requestSignature, signatureSecret);
 
             return hmacHash == xSlackSignature;
         }
 
-        private string GetHmacSha256Hash(string xSlackRequestTimestamp, string requestBody, string signatureSecret)
+        /// <summary>
+        /// Gets HmacSha256 hash of a Slack request signature using a Slack secret
+        /// </summary>
+        /// <param name="requestSignature"></param>
+        /// <param name="signatureSecret"></param>
+        /// <returns></returns>
+        private string GetHmacSha256Hash(string requestSignature, string signatureSecret)
         {
-            var requestSignature = BuildRequestSignature(xSlackRequestTimestamp, requestBody);
-
             var HmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(signatureSecret));
             var hashBytes = HmacSha256.ComputeHash(Encoding.UTF8.GetBytes(requestSignature));
             var hash = HashEncode(hashBytes);
@@ -31,6 +44,11 @@ namespace Slack.Utilities.Slack
             return versionedHash;
         }
 
+        /// <summary>
+        /// Validates the request is valid based on its requestTimestamp
+        /// </summary>
+        /// <param name="xSlackRequestTimestamp"></param>
+        /// <returns></returns>
         private bool DateValid(string xSlackRequestTimestamp)
         {
             var time = new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToInt64(xSlackRequestTimestamp));
@@ -46,6 +64,12 @@ namespace Slack.Utilities.Slack
             return true;
         }
 
+        /// <summary>
+        /// Build Slack request signature from request timestamp and raw request body
+        /// </summary>
+        /// <param name="xSlackRequestTimestamp"></param>
+        /// <param name="requestBody"></param>
+        /// <returns></returns>
         private string BuildRequestSignature(string xSlackRequestTimestamp, string requestBody)
         {
             var baseString = $"{VersionNumber}:{xSlackRequestTimestamp}:{requestBody}";
