@@ -6,6 +6,7 @@ namespace Slack.Utilities.Slack
 {
     public class SlackSigningUtil
     {
+        private const string VersionNumber = "v0";
 
         public bool SignatureValid(string xSlackSignature, string xSlackRequestTimestamp, string requestBody, string signatureSecret)
         {
@@ -26,7 +27,7 @@ namespace Slack.Utilities.Slack
             var HmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(signatureSecret));
             var hashBytes = HmacSha256.ComputeHash(Encoding.UTF8.GetBytes(requestSignature));
             var hash = HashEncode(hashBytes);
-            var versionedHash = $"v0={hash}";
+            var versionedHash = $"{VersionNumber}={hash}";
             return versionedHash;
         }
 
@@ -34,7 +35,10 @@ namespace Slack.Utilities.Slack
         {
             var time = new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToInt64(xSlackRequestTimestamp));
             var difference = time.Subtract(DateTime.UtcNow);
-            if (Math.Abs(difference.TotalSeconds) > 60 * 5)
+
+            const int secondsInMinute = 60;
+            const int minutesRequestValid = 5;
+            if (Math.Abs(difference.TotalSeconds) > secondsInMinute * minutesRequestValid)
             {
                 return false;
             }
@@ -44,8 +48,7 @@ namespace Slack.Utilities.Slack
 
         private string BuildRequestSignature(string xSlackRequestTimestamp, string requestBody)
         {
-            var versionNumber = "v0";
-            var baseString = $"{versionNumber}:{xSlackRequestTimestamp}:{requestBody}";
+            var baseString = $"{VersionNumber}:{xSlackRequestTimestamp}:{requestBody}";
             return baseString;
         }
 
