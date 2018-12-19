@@ -52,7 +52,7 @@ namespace Slack.Utilities.Slack
             return baseString;
         }
 
-        private static string HashEncode(byte[] hash)
+        private string HashEncode(byte[] hash)
         {
             return BitConverter.ToString(hash).Replace("-", "").ToLower();
         }
