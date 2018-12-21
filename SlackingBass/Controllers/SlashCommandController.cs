@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SlackingBass.Models.Slack;
 using SlackingBass.Services;
-using SlackingBass.Utilities.Slack;
 using System.IO;
 using Microsoft.Extensions.Options;
 using SlackingBass.Models.NotifyMe;
@@ -17,13 +16,15 @@ namespace SlackingBass.Controllers
         private NotifyMeSettings NotifyMeSettings { get; set; }
         private AlexaNotificationService AlexaNotificationService { get; set; }
         private INotificationService NotificationService { get; set; }
+        private ISignatureValidationService SignatureValidationService { get; set; }
 
-        public SlashCommandController(IOptions<SlackSettings> slackSettings, IOptions<NotifyMeSettings> notifyMeSettings, INotificationService notificationService)
+        public SlashCommandController(IOptions<SlackSettings> slackSettings, IOptions<NotifyMeSettings> notifyMeSettings, INotificationService notificationService, ISignatureValidationService signatureValidationService)
         {
             SlackSettings = slackSettings.Value;
             NotifyMeSettings = notifyMeSettings.Value;
             NotificationService = notificationService;
             AlexaNotificationService = new AlexaNotificationService(NotificationService);
+            SignatureValidationService = signatureValidationService;
         }
 
         [HttpPost]
@@ -36,8 +37,7 @@ namespace SlackingBass.Controllers
             var slashCommandPayload = new SlashCommandPayload(requestBody);
 
             // Verify request signature
-            var slackSigningUtil = new SlackSigningUtil();
-            if (!slackSigningUtil.SignatureValid(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], requestBody, SlackSettings.SignatureSecret))
+            if (!SignatureValidationService.SignatureValid(Request.Headers["X-Slack-Signature"], Request.Headers["X-Slack-Request-Timestamp"], requestBody, SlackSettings.SignatureSecret))
             {
                 return BadRequest();
             }

@@ -24,6 +24,8 @@ namespace SlackingBass
             services.Configure<SlackSettings>(Configuration.GetSection("Slack"));
             services.Configure<NotifyMeSettings>(Configuration.GetSection("NotifyMe"));
             services.AddScoped<INotificationService, NotifyMeService>();
+            services.AddScoped<IHashService, HmacSha256HashService>();
+            services.AddScoped<ISignatureValidationService, SlackSignatureValidationService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

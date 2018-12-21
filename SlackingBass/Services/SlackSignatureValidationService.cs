@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SlackingBass.Utilities.Slack
+namespace SlackingBass.Services
 {
-    public class SlackSigningUtil
+    public class SlackSignatureValidationService : ISignatureValidationService
     {
         private const string VersionNumber = "v0";
+        private IHashService HashService { get; set; }
+
+        public SlackSignatureValidationService(IHashService hashService)
+        {
+            HashService = hashService;
+        }
 
         /// <summary>
         /// Checks the validity of a Slack request using the requests signature
@@ -18,30 +25,20 @@ namespace SlackingBass.Utilities.Slack
         /// <returns></returns>
         public bool SignatureValid(string xSlackSignature, string xSlackRequestTimestamp, string requestBody, string signatureSecret)
         {
+            // Validate request timestamp
             if (!DateValid(xSlackRequestTimestamp))
             {
                 return false;
             }
 
+            // Build request signature
             var requestSignature = BuildRequestSignature(xSlackRequestTimestamp, requestBody);
-            var hmacHash = GetHmacSha256Hash(requestSignature, signatureSecret);
 
-            return hmacHash == xSlackSignature;
-        }
+            // Hash request signature
+            var hashedSignature = HashService.GetHash(requestSignature, signatureSecret);
+            var versionedHash = HashService.GenerateVersionedHash(hashedSignature, VersionNumber);
 
-        /// <summary>
-        /// Gets HmacSha256 hash of a Slack request signature using a Slack secret
-        /// </summary>
-        /// <param name="requestSignature"></param>
-        /// <param name="signatureSecret"></param>
-        /// <returns></returns>
-        private string GetHmacSha256Hash(string requestSignature, string signatureSecret)
-        {
-            var HmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(signatureSecret));
-            var hashBytes = HmacSha256.ComputeHash(Encoding.UTF8.GetBytes(requestSignature));
-            var hash = HashEncode(hashBytes);
-            var versionedHash = $"{VersionNumber}={hash}";
-            return versionedHash;
+            return versionedHash == xSlackSignature;
         }
 
         /// <summary>
@@ -74,11 +71,6 @@ namespace SlackingBass.Utilities.Slack
         {
             var baseString = $"{VersionNumber}:{xSlackRequestTimestamp}:{requestBody}";
             return baseString;
-        }
-
-        private string HashEncode(byte[] hash)
-        {
-            return BitConverter.ToString(hash).Replace("-", "").ToLower();
         }
     }
 }
