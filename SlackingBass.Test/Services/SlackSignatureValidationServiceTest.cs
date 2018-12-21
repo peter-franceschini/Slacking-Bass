@@ -14,12 +14,68 @@ namespace SlackingBass.Test.Utilities.Slack
         {
             var hashService = new HmacSha256HashService();
             var slackSignatureValidationService = new SlackSignatureValidationService(hashService);
+
+            // Dumby data from slack documentation
             string xSlackSignature = "v0=30fce689f9150236dd75fcfbec40374a7495fb8b7b179fa0112cec871cef5c5e";
             string xSlackRequestTimestamp = "1545336933";
-            string requestBody = "token=IYrLqos4BxfSVvVe0BcqW36D&team_id=T3VCSKSN7&team_domain=octopusunicorn&channel_id=C3W5PQGFR&channel_name=general&user_id=U3W5PQE0P&user_name=peter&command=%2Ftest&text=testing&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT3VCSKSN7%2F509522938821%2FJxEFYrz7ug6oY8Hj0WF9T0cL&trigger_id=510375801943.131434672755.c7167f537e169a70ad39ef06059a8322";
+            string requestBody = "token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
             string slackSecret = "8f742231b10e8888abcd99yyyzzz85a5";
 
             Assert.IsFalse(slackSignatureValidationService.SignatureValid(xSlackSignature, xSlackRequestTimestamp, requestBody, slackSecret));
+        }
+
+        [TestMethod]
+        public void SignatureValid_ValidSignature_ReturnSignatureValid()
+        {
+            var hashService = new HmacSha256HashService();
+            var slackSignatureValidationService = new SlackSignatureValidationService(hashService);
+
+            // Dumby data from slack documentation
+            var xSlackRequestTimestamp = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+            var requestBody = "token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
+            var slackSecret = "8f742231b10e8888abcd99yyyzzz85a5";
+
+            // Build validHashedSlackSignature to compare against
+            var validSlackSignature = $"v0:{xSlackRequestTimestamp}:token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
+            var validHashedSlackSignature = "v0=" + hashService.GetHash(validSlackSignature, slackSecret);
+
+            Assert.IsTrue(slackSignatureValidationService.SignatureValid(validHashedSlackSignature, xSlackRequestTimestamp, requestBody, slackSecret));
+        }
+
+        [TestMethod]
+        public void SignatureValid_InvalidRequestBody_ReturnSignatureInvalid()
+        {
+            var hashService = new HmacSha256HashService();
+            var slackSignatureValidationService = new SlackSignatureValidationService(hashService);
+
+            // Dumby data from slack documentation
+            var xSlackRequestTimestamp = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+            var requestBody = string.Empty;
+            var slackSecret = "8f742231b10e8888abcd99yyyzzz85a5";
+
+            // Build validHashedSlackSignature to compare against
+            var validSlackSignature = $"v0:{xSlackRequestTimestamp}:token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
+            var validHashedSlackSignature = "v0=" + hashService.GetHash(validSlackSignature, slackSecret);
+
+            Assert.IsFalse(slackSignatureValidationService.SignatureValid(validHashedSlackSignature, xSlackRequestTimestamp, requestBody, slackSecret));
+        }
+
+        [TestMethod]
+        public void SignatureValid_InvalidSecret_ReturnSignatureInvalid()
+        {
+            var hashService = new HmacSha256HashService();
+            var slackSignatureValidationService = new SlackSignatureValidationService(hashService);
+
+            // Dumby data from slack documentation
+            var xSlackRequestTimestamp = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+            var requestBody = "token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
+            var slackSecret = "8f742231b10e8888abcd99yyyzzz85a5";
+
+            // Build validHashedSlackSignature to compare against
+            var validSlackSignature = $"v0:{xSlackRequestTimestamp}:token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c";
+            var validHashedSlackSignature = "v0=" + hashService.GetHash(validSlackSignature, slackSecret);
+
+            Assert.IsFalse(slackSignatureValidationService.SignatureValid(validHashedSlackSignature, xSlackRequestTimestamp, requestBody, string.Empty));
         }
     }
 }
