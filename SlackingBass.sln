@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackingBass", "SlackingBass\SlackingBass.csproj", "{FFB1B50C-6C20-42E1-970D-72C93D8DC54E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackingBass", "src\SlackingBass\SlackingBass.csproj", "{FFB1B50C-6C20-42E1-970D-72C93D8DC54E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackingBass.Test", "SlackingBass.Test\SlackingBass.Test.csproj", "{958AF3D6-82A8-453F-80EA-AF7F29BE10F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackingBass.Test", "src\SlackingBass.Test\SlackingBass.Test.csproj", "{958AF3D6-82A8-453F-80EA-AF7F29BE10F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
