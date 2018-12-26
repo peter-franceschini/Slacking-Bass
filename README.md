@@ -2,8 +2,8 @@
 
 Slacking Bass is an ASP.NET Core 2.2 implementation of the Slack Slash Command API, paired with Alexa's notification service to allow Slack users to send audio messages to an Alexa device (preferablly an [Alexa enabled Billy Bass](https://www.amazon.com/Big-Mouth-Billy-Bass-Compatible/dp/B07657LKNZ)) from a Slash Command.
 
-![example 1](resources/example_1.png)
-![example 2](resources/example_2.png)
+![example 1](resources/example_1.PNG)
+![example 2](resources/example_2.PNG)
 
 ## Integrations
 * [Slack Slash Commands](https://api.slack.com/slash-commands)
